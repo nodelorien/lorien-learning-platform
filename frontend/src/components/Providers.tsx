@@ -1,10 +1,12 @@
 'use client';
 
-import { CssBaseline, ThemeProvider, createTheme, Box } from '@mui/material';
+import { CssBaseline, ThemeProvider, createTheme, Box, Alert } from '@mui/material';
 import { AuthProvider } from '@/contexts/AuthContext';
-import { I18nProvider } from '@/contexts/I18nContext';
+import { I18nProvider, useI18n } from '@/contexts/I18nContext';
 import { PusherProvider } from '@/contexts/PusherContext';
+import { t } from '@/lib/i18n';
 import Topbar from '@/components/Topbar';
+import HeartOfLorien from '@/components/HeartOfLorien';
 
 const theme = createTheme({
   palette: {
@@ -33,6 +35,15 @@ const theme = createTheme({
   },
 });
 
+function DisclaimerBar() {
+  const { lang } = useI18n();
+  return (
+    <Alert severity="warning" sx={{ borderRadius: 0, fontSize: { xs: '0.75rem', sm: '0.875rem' }, py: 0.5 }}>
+      {t('disclaimer.text', lang)}
+    </Alert>
+  );
+}
+
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider theme={theme}>
@@ -42,7 +53,11 @@ export default function Providers({ children }: { children: React.ReactNode }) {
           <PusherProvider>
           <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             <Topbar />
-            <Box sx={{ flex: 1, p: { xs: 1.5, sm: 3 }, bgcolor: '#f0f2f5' }}>{children}</Box>
+            <DisclaimerBar />
+            <Box sx={{ flex: 1, display: 'flex', gap: { md: 2 }, p: { xs: 1.5, sm: 3 }, bgcolor: '#f0f2f5', overflow: 'hidden' }}>
+              <Box sx={{ flex: 1, minWidth: 0, overflow: 'auto' }}>{children}</Box>
+              <HeartOfLorien />
+            </Box>
           </Box>
           </PusherProvider>
         </AuthProvider>

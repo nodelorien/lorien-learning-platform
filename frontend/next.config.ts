@@ -6,6 +6,14 @@ const API_URL = process.env.API_URL || 'http://localhost:4000';
 const nextConfig: NextConfig = {
   images: { unoptimized: true },
   outputFileTracingRoot: path.resolve('..'),
+  cacheMaxMemorySize: 0,
+
+  experimental: {
+    cpus: 2,
+    memoryBasedWorkersCount: true,
+    webpackMemoryOptimizations: true,
+    preloadEntriesOnStart: false,
+  },
 
   async rewrites() {
     return [

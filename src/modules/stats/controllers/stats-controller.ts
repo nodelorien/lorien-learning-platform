@@ -21,6 +21,11 @@ export function createStatsController(
       const stats = await recordAttempt.execute(req.body);
       triggerEvent(CHANNELS.RANKING, EVENTS.RANKING_UPDATED, { timestamp: Date.now() });
       triggerEvent(CHANNELS.TRAININGS, EVENTS.TRAINING_UPDATED, { timestamp: Date.now() });
+      triggerEvent(CHANNELS.ACTIVITY, EVENTS.ACTIVITY, {
+        type: 'exercise_completed',
+        status: stats.status,
+        timestamp: Date.now(),
+      });
       res.status(201).json(stats);
     } catch {
       res.status(500).json({ error: 'Error al registrar intento' });

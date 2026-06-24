@@ -25,9 +25,11 @@ export function triggerEvent(channel: string, event: string, data: Record<string
 export const CHANNELS = {
   RANKING: 'ranking',
   TRAININGS: 'trainings',
+  ACTIVITY: 'activity',
 } as const;
 
 export const EVENTS = {
   RANKING_UPDATED: 'ranking-updated',
   TRAINING_UPDATED: 'training-updated',
+  ACTIVITY: 'platform-activity',
 } as const;

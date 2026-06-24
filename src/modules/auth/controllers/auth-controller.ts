@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { AuthenticateUser } from '../application/authenticate-user';
 import { RegisterUser } from '../application/register-user';
 import { UserRepository } from '../domain/user-repository';
+import { triggerEvent, CHANNELS, EVENTS } from '../../../shared/infrastructure/pusher';
 
 declare module 'express-session' {
   interface SessionData {
@@ -25,6 +26,7 @@ export function createAuthController(
         return;
       }
       req.session.user = result.user!;
+      triggerEvent(CHANNELS.ACTIVITY, EVENTS.ACTIVITY, { type: 'login', timestamp: Date.now() });
       res.json(result.user);
     } catch {
       res.status(500).json({ error: 'Error interno del servidor' });
@@ -44,6 +46,11 @@ export function createAuthController(
       }
       const user = await register.execute({ name, company, trainingId, password });
       req.session.user = { id: user.id, name: user.name, role: user.role };
+      triggerEvent(CHANNELS.ACTIVITY, EVENTS.ACTIVITY, {
+        type: 'register',
+        trainingRegistered: !!trainingId,
+        timestamp: Date.now(),
+      });
       res.status(201).json({ id: user.id, name: user.name, company: user.company });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Error al registrar';
