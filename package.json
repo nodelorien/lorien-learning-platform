@@ -1,0 +1,72 @@
+{
+  "name": "lorien-learning-platform",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [
+    "learning",
+    "ai",
+    "socket",
+    "pusher",
+    "real-time"
+  ],
+  "homepage": "https://github.com/nodelorien/lorien-learning-platform#readme",
+  "bugs": {
+    "url": "https://github.com/nodelorien/lorien-learning-platform/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nodelorien/lorien-learning-platform.git"
+  },
+  "license": "ISC",
+  "author": "@nodelorien",
+  "type": "commonjs",
+  "main": "dist/server.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "dev": "nodemon",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "test": "jest --passWithNoTests",
+    "lint": "eslint src/ --ext .ts",
+    "lint:fix": "eslint src/ --ext .ts --fix",
+    "format": "prettier --write \"src/**/*.ts\""
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "better-sqlite3": "^12.11.1",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "pusher": "^5.3.4",
+    "pusher-js": "^8.5.0",
+    "sqlite3": "^6.0.1",
+    "uuid": "^14.0.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/express-session": "^1.19.0",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^26.0.0",
+    "@types/supertest": "^7.2.0",
+    "@types/uuid": "^10.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.62.0",
+    "@typescript-eslint/parser": "^8.62.0",
+    "eslint": "^10.5.0",
+    "eslint-config-prettier": "^10.1.8",
+    "jest": "^30.4.2",
+    "nodemon": "^3.1.14",
+    "prettier": "^3.8.4",
+    "supertest": "^7.2.2",
+    "ts-jest": "^29.4.11",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.62.0"
+  }
+}
