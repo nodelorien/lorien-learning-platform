@@ -231,7 +231,3 @@ function TrainingDetailContent() {
 export default function TrainingDetailPage() {
   return <ProtectedRoute><TrainingDetailContent /></ProtectedRoute>;
 }
-
-export function generateStaticParams() {
-  return [];
-}

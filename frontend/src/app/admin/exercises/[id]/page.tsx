@@ -239,7 +239,3 @@ function EditExerciseContent() {
 export default function EditExercisePage() {
   return <AdminRoute><EditExerciseContent /></AdminRoute>;
 }
-
-export function generateStaticParams() {
-  return [];
-}

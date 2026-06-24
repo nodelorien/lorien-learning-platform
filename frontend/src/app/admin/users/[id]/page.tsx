@@ -91,7 +91,3 @@ function EditUserContent() {
 export default function EditUserPage() {
   return <AdminRoute><EditUserContent /></AdminRoute>;
 }
-
-export function generateStaticParams() {
-  return [];
-}
