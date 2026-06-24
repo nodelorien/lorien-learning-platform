@@ -1,12 +1,15 @@
+export type ExerciseType = 'prompt' | 'trivia' | 'tokens';
+
 export interface Exercise {
   id: string;
   title: string;
   description: string;
-  type: 'prompt' | 'trivia';
+  type: ExerciseType;
   content: string;
   category: string;
   topic: string;
   enabled: boolean;
+  timeLimitSeconds: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -14,10 +17,11 @@ export interface Exercise {
 export interface CreateExerciseInput {
   title: string;
   description?: string;
-  type: 'prompt' | 'trivia';
+  type: ExerciseType;
   content: string;
   category?: string;
   topic?: string;
+  timeLimitSeconds?: number;
 }
 
 export interface TriviaOption {

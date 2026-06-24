@@ -130,7 +130,7 @@ function EditTrainingContent() {
 
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, md: 7 }}>
-          <Paper sx={{ p: 4, borderRadius: 3, mb: 3 }}>
+          <Paper sx={{ p: { xs: 2, sm: 4 }, borderRadius: 3, mb: 3 }}>
             <TextField
               fullWidth
               label="Título"
@@ -160,11 +160,11 @@ function EditTrainingContent() {
               control={<Switch checked={enabled} onChange={(e) => setEnabled(e.target.checked)} />}
               label={enabled ? t('admin.enabled', lang) : t('admin.disabled', lang)}
             />
-            <Box sx={{ mt: 2, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-              <Button variant="outlined" onClick={() => router.push('/admin/trainings')}>
+            <Box sx={{ mt: 2, display: 'flex', gap: 2, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+              <Button variant="outlined" onClick={() => router.push('/admin/trainings')} sx={{ flex: { xs: 1, sm: 'none' } }}>
                 {t('admin.cancel', lang)}
               </Button>
-              <Button variant="contained" onClick={handleSave} sx={{ bgcolor: '#e94560' }}>
+              <Button variant="contained" onClick={handleSave} sx={{ bgcolor: '#e94560', flex: { xs: 1, sm: 'none' } }}>
                 {t('admin.save', lang)}
               </Button>
             </Box>
@@ -186,8 +186,8 @@ function EditTrainingContent() {
                     </Typography>
                   </Box>
                   <Box sx={{ display: 'flex', gap: 0.5 }}>
-                    <Button size="small" disabled={i === 0} onClick={() => moveExercise(i, -1)}>↑</Button>
-                    <Button size="small" disabled={i === exercises.length - 1} onClick={() => moveExercise(i, 1)}>↓</Button>
+                    <Button size="medium" disabled={i === 0} onClick={() => moveExercise(i, -1)} sx={{ minWidth: 36 }}>↑</Button>
+                    <Button size="medium" disabled={i === exercises.length - 1} onClick={() => moveExercise(i, 1)} sx={{ minWidth: 36 }}>↓</Button>
                     <IconButton size="small" color="error" onClick={() => handleRemoveExercise(te.exerciseId)}>
                       <DeleteIcon />
                     </IconButton>
@@ -222,7 +222,7 @@ function EditTrainingContent() {
           </Paper>
 
           {stats && (
-            <Paper sx={{ p: 3, borderRadius: 3 }}>
+          <Paper sx={{ p: { xs: 2, sm: 3 }, borderRadius: 3 }}>
               <Typography variant="h6" sx={{ mb: 2 }}>{t('admin.stats', lang)}</Typography>
               <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
                 <Chip label={`${t('admin.registered', lang)}: ${stats.totalUsers}`} color="primary" />

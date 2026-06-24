@@ -81,6 +81,14 @@ export class SqliteStatsRepository implements StatsRepository {
     return row ? rowToStats(row) : null;
   }
 
+  async findByUserAndTraining(userId: string, trainingId: string): Promise<UserExerciseStats[]> {
+    const db = getDb();
+    const rows = db
+      .prepare('SELECT * FROM user_exercise_stats WHERE user_id = ? AND training_id = ? ORDER BY created_at DESC')
+      .all(userId, trainingId) as StatsRow[];
+    return rows.map(rowToStats);
+  }
+
   async findByTraining(trainingId: string): Promise<UserExerciseStats[]> {
     const db = getDb();
     const rows = db

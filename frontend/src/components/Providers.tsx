@@ -3,6 +3,7 @@
 import { CssBaseline, ThemeProvider, createTheme, Box } from '@mui/material';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { I18nProvider } from '@/contexts/I18nContext';
+import { PusherProvider } from '@/contexts/PusherContext';
 import Topbar from '@/components/Topbar';
 
 const theme = createTheme({
@@ -38,10 +39,12 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       <CssBaseline />
       <I18nProvider>
         <AuthProvider>
+          <PusherProvider>
           <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             <Topbar />
-            <Box sx={{ flex: 1, p: 3, bgcolor: '#f0f2f5' }}>{children}</Box>
+            <Box sx={{ flex: 1, p: { xs: 1.5, sm: 3 }, bgcolor: '#f0f2f5' }}>{children}</Box>
           </Box>
+          </PusherProvider>
         </AuthProvider>
       </I18nProvider>
     </ThemeProvider>

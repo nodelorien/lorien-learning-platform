@@ -6,6 +6,7 @@ export class CreateExercise {
   constructor(private readonly exerciseRepository: ExerciseRepository) {}
 
   async execute(input: CreateExerciseInput): Promise<Exercise> {
+    const defaults: Record<string, number> = { trivia: 15, prompt: 150, tokens: 120 };
     const exercise: Exercise = {
       id: uuid(),
       title: input.title,
@@ -15,6 +16,7 @@ export class CreateExercise {
       category: input.category ?? '',
       topic: input.topic ?? '',
       enabled: true,
+      timeLimitSeconds: input.timeLimitSeconds ?? defaults[input.type] ?? 60,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };

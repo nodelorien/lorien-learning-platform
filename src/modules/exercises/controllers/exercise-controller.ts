@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { CreateExercise } from '../application/create-exercise';
 import { UpdateExercise } from '../application/update-exercise';
 import { ExerciseRepository } from '../domain/exercise-repository';
+import { gradePrompt } from '../../../shared/infrastructure/deepseek';
 
 function p(params: Record<string, string | string[]>, key: string): string {
   const v = params[key];
@@ -71,6 +72,27 @@ export function createExerciseController(
       res.json({ success: true });
     } catch {
       res.status(500).json({ error: 'Error al eliminar ejercicio' });
+    }
+  });
+
+  router.post('/grade-prompt', async (req: Request, res: Response) => {
+    try {
+      const { exerciseId, userPrompt } = req.body;
+      const exercise = await exerciseRepository.findById(exerciseId);
+      if (!exercise) {
+        res.status(404).json({ error: 'Ejercicio no encontrado' });
+        return;
+      }
+      const content = JSON.parse(exercise.content);
+      const result = await gradePrompt(
+        exercise.title,
+        exercise.description,
+        content.prompt,
+        userPrompt,
+      );
+      res.json(result);
+    } catch {
+      res.status(500).json({ error: 'Error al calificar el prompt' });
     }
   });
 

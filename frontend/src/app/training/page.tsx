@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/RouteGuard';
 import {
@@ -22,6 +22,7 @@ import {
 } from '@mui/icons-material';
 import api from '@/lib/api';
 import { useI18n } from '@/contexts/I18nContext';
+import { usePusherEvent } from '@/contexts/PusherContext';
 import { t } from '@/lib/i18n';
 
 interface Training {
@@ -38,12 +39,22 @@ function TrainingPageContent() {
   const [trainings, setTrainings] = useState<Training[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const load = useCallback(() => {
     api.get('/trainings').then(({ data }) => {
       setTrainings(data.filter((t: Training) => t.enabled));
       setLoading(false);
     }).catch(() => setLoading(false));
   }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const pollRef = useRef<ReturnType<typeof setInterval>>();
+  useEffect(() => {
+    pollRef.current = setInterval(load, 30000);
+    return () => clearInterval(pollRef.current);
+  }, [load]);
+
+  usePusherEvent('trainings', 'training-updated', load);
 
   if (loading) {
     return (
@@ -101,7 +112,7 @@ function TrainingPageContent() {
                 </Box>
               </CardContent>
               <CardActions>
-                <Button size="small" color="secondary" startIcon={<SchoolIcon />}>
+                <Button size="medium" color="secondary" startIcon={<SchoolIcon />}>
                   {t('training.start', lang)}
                 </Button>
               </CardActions>

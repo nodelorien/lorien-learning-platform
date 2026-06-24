@@ -55,6 +55,14 @@ export class SqliteUserRepository implements UserRepository {
     return rows.map(rowToUser);
   }
 
+  async update(user: User): Promise<User> {
+    const db = getDb();
+    db.prepare(
+      'UPDATE users SET name = ?, company = ?, training_id = ?, role = ? WHERE id = ?',
+    ).run(user.name, user.company, user.trainingId ?? null, user.role, user.id);
+    return user;
+  }
+
   async delete(id: string): Promise<void> {
     const db = getDb();
     db.prepare('DELETE FROM users WHERE id = ?').run(id);

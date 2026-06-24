@@ -40,9 +40,10 @@ function EditExerciseContent() {
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [type, setType] = useState<'prompt' | 'trivia'>('prompt');
+  const [type, setType] = useState<string>('prompt');
   const [category, setCategory] = useState('');
   const [topic, setTopic] = useState('');
+  const [timeLimitSeconds, setTimeLimitSeconds] = useState('15');
   const [enabled, setEnabled] = useState(true);
   const [prompt, setPrompt] = useState('');
   const [expectedAnswer, setExpectedAnswer] = useState('');
@@ -59,6 +60,7 @@ function EditExerciseContent() {
       setCategory(data.category);
       setTopic(data.topic);
       setEnabled(data.enabled);
+      setTimeLimitSeconds(String(data.timeLimitSeconds ?? 15));
       const content = JSON.parse(data.content);
       if (data.type === 'prompt') {
         setPrompt(content.prompt);
@@ -101,6 +103,7 @@ function EditExerciseContent() {
 
     await api.put(`/exercises/${id}`, {
       title, description, type, content, category, topic, enabled,
+      timeLimitSeconds: parseInt(timeLimitSeconds, 10) || 15,
     });
     router.push('/admin/exercises');
   };
@@ -114,7 +117,7 @@ function EditExerciseContent() {
         <Typography variant="h5">Editar Ejercicio</Typography>
       </Box>
 
-      <Paper sx={{ p: 4, borderRadius: 3 }}>
+      <Paper sx={{ p: { xs: 2, sm: 4 }, borderRadius: 3 }}>
         <form onSubmit={handleSubmit}>
           <TextField
             fullWidth
@@ -133,17 +136,33 @@ function EditExerciseContent() {
             multiline
             rows={2}
           />
-          <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+          <Box sx={{ display: 'flex', gap: 2, mb: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
             <FormControl fullWidth>
               <InputLabel>Tipo</InputLabel>
-              <Select value={type} label="Tipo" onChange={(e) => setType(e.target.value as 'prompt' | 'trivia')}>
+              <Select value={type} label="Tipo" onChange={(e) => {
+                const t = e.target.value as string;
+                setType(t);
+                setTimeLimitSeconds(t === 'trivia' ? '15' : t === 'prompt' ? '150' : '120');
+              }}>
                 <MenuItem value="prompt">Prompt</MenuItem>
                 <MenuItem value="trivia">Trivia</MenuItem>
+                <MenuItem value="tokens">Tokens</MenuItem>
               </Select>
             </FormControl>
             <TextField fullWidth label="Categoría" value={category} onChange={(e) => setCategory(e.target.value)} />
             <TextField fullWidth label="Tema" value={topic} onChange={(e) => setTopic(e.target.value)} />
           </Box>
+
+          <TextField
+            fullWidth
+            label="Tiempo límite (segundos)"
+            type="number"
+            value={timeLimitSeconds}
+            onChange={(e) => setTimeLimitSeconds(e.target.value)}
+            sx={{ mb: 2 }}
+            helperText={type === 'trivia' ? 'Recomendado: 15s' : type === 'prompt' ? 'Recomendado: 150s (2.5 min)' : 'Recomendado: 120s (2 min)'}
+            slotProps={{ htmlInput: { min: 5 } }}
+          />
 
           <FormControlLabel
             control={<Switch checked={enabled} onChange={(e) => setEnabled(e.target.checked)} />}
@@ -207,9 +226,9 @@ function EditExerciseContent() {
             </>
           )}
 
-          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-            <Button variant="outlined" onClick={() => router.back()}>{t('admin.cancel', lang)}</Button>
-            <Button type="submit" variant="contained" sx={{ bgcolor: '#e94560' }}>{t('admin.save', lang)}</Button>
+          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+            <Button variant="outlined" onClick={() => router.back()} sx={{ flex: { xs: 1, sm: 'none' } }}>{t('admin.cancel', lang)}</Button>
+            <Button type="submit" variant="contained" sx={{ bgcolor: '#e94560', flex: { xs: 1, sm: 'none' } }}>{t('admin.save', lang)}</Button>
           </Box>
         </form>
       </Paper>

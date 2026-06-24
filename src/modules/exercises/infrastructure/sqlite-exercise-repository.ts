@@ -1,6 +1,6 @@
 import { v4 as uuid } from 'uuid';
 import { getDb } from '../../../shared/infrastructure/database';
-import { Exercise } from '../domain/exercise';
+import { Exercise, ExerciseType } from '../domain/exercise';
 import { ExerciseRepository } from '../domain/exercise-repository';
 
 interface ExerciseRow {
@@ -12,6 +12,7 @@ interface ExerciseRow {
   category: string;
   topic: string;
   enabled: number;
+  time_limit_seconds: number;
   created_at: string;
   updated_at: string;
 }
@@ -21,11 +22,12 @@ function rowToExercise(row: ExerciseRow): Exercise {
     id: row.id,
     title: row.title,
     description: row.description,
-    type: row.type as 'prompt' | 'trivia',
+    type: row.type as Exercise['type'],
     content: row.content,
     category: row.category,
     topic: row.topic,
     enabled: row.enabled === 1,
+    timeLimitSeconds: row.time_limit_seconds,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -37,7 +39,7 @@ export class SqliteExerciseRepository implements ExerciseRepository {
     const id = exercise.id || uuid();
     const now = new Date().toISOString();
     db.prepare(
-      'INSERT INTO exercises (id, title, description, type, content, category, topic, enabled, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      'INSERT INTO exercises (id, title, description, type, content, category, topic, enabled, time_limit_seconds, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
     ).run(
       id,
       exercise.title,
@@ -47,6 +49,7 @@ export class SqliteExerciseRepository implements ExerciseRepository {
       exercise.category,
       exercise.topic,
       exercise.enabled ? 1 : 0,
+      exercise.timeLimitSeconds,
       now,
       now,
     );
@@ -90,7 +93,7 @@ export class SqliteExerciseRepository implements ExerciseRepository {
     const db = getDb();
     const now = new Date().toISOString();
     db.prepare(
-      'UPDATE exercises SET title = ?, description = ?, type = ?, content = ?, category = ?, topic = ?, enabled = ?, updated_at = ? WHERE id = ?',
+      'UPDATE exercises SET title = ?, description = ?, type = ?, content = ?, category = ?, topic = ?, enabled = ?, time_limit_seconds = ?, updated_at = ? WHERE id = ?',
     ).run(
       exercise.title,
       exercise.description,
@@ -99,6 +102,7 @@ export class SqliteExerciseRepository implements ExerciseRepository {
       exercise.category,
       exercise.topic,
       exercise.enabled ? 1 : 0,
+      exercise.timeLimitSeconds,
       now,
       exercise.id,
     );

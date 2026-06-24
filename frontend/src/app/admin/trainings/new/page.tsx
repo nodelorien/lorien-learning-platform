@@ -41,7 +41,7 @@ function NewTrainingContent() {
         <Typography variant="h5">{t('admin.new', lang)} Training</Typography>
       </Box>
 
-      <Paper sx={{ p: 4, borderRadius: 3 }}>
+      <Paper sx={{ p: { xs: 2, sm: 4 }, borderRadius: 3 }}>
         <form onSubmit={handleSubmit}>
           <TextField
             fullWidth
@@ -69,11 +69,11 @@ function NewTrainingContent() {
             sx={{ mb: 3 }}
             slotProps={{ inputLabel: { shrink: true } }}
           />
-          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-            <Button variant="outlined" onClick={() => router.back()}>
+          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+            <Button variant="outlined" onClick={() => router.back()} fullWidth={false} sx={{ flex: { xs: 1, sm: 'none' } }}>
               {t('admin.cancel', lang)}
             </Button>
-            <Button type="submit" variant="contained" sx={{ bgcolor: '#e94560' }}>
+            <Button type="submit" variant="contained" sx={{ bgcolor: '#e94560', flex: { xs: 1, sm: 'none' } }}>
               {t('admin.save', lang)}
             </Button>
           </Box>

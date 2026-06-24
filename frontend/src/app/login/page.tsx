@@ -40,7 +40,7 @@ export default function LoginPage() {
 
   return (
     <Container maxWidth="xs" sx={{ py: 8 }}>
-      <Paper sx={{ p: 4, borderRadius: 3 }}>
+      <Paper sx={{ p: { xs: 2, sm: 4 }, borderRadius: 3 }}>
         <Box sx={{ textAlign: 'center', mb: 3 }}>
           <SchoolIcon sx={{ fontSize: 48, color: '#e94560', mb: 1 }} />
           <Typography variant="h5">{t('login.title', lang)}</Typography>

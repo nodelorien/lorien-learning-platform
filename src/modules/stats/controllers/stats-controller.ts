@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { RecordAttempt } from '../application/record-attempt';
 import { GetRanking } from '../application/get-ranking';
 import { StatsRepository } from '../domain/stats-repository';
+import { getPusher, CHANNELS, EVENTS } from '../../../shared/infrastructure/pusher';
 
 function p(params: Record<string, string | string[]>, key: string): string {
   const v = params[key];
@@ -18,6 +19,8 @@ export function createStatsController(
   router.post('/attempts', async (req: Request, res: Response) => {
     try {
       const stats = await recordAttempt.execute(req.body);
+      getPusher().trigger(CHANNELS.RANKING, EVENTS.RANKING_UPDATED, { timestamp: Date.now() });
+      getPusher().trigger(CHANNELS.TRAININGS, EVENTS.TRAINING_UPDATED, { timestamp: Date.now() });
       res.status(201).json(stats);
     } catch {
       res.status(500).json({ error: 'Error al registrar intento' });
@@ -39,6 +42,18 @@ export function createStatsController(
       res.json(stats);
     } catch {
       res.status(500).json({ error: 'Error al obtener estadísticas' });
+    }
+  });
+
+  router.get('/training/:trainingId/user/:userId', async (req: Request, res: Response) => {
+    try {
+      const stats = await statsRepository.findByUserAndTraining(
+        p(req.params, 'userId'),
+        p(req.params, 'trainingId'),
+      );
+      res.json(stats);
+    } catch {
+      res.status(500).json({ error: 'Error al obtener estadísticas del usuario' });
     }
   });
 

@@ -33,12 +33,17 @@ export function createAuthController(
 
   router.post('/register', async (req: Request, res: Response) => {
     try {
-      const { name, company, trainingId } = req.body;
+      const { name, company, trainingId, password } = req.body;
       if (!name) {
         res.status(400).json({ error: 'El nombre es requerido' });
         return;
       }
-      const user = await register.execute({ name, company, trainingId, password: 'temporal123' });
+      if (!password || password.length < 4) {
+        res.status(400).json({ error: 'La contraseña debe tener al menos 4 caracteres' });
+        return;
+      }
+      const user = await register.execute({ name, company, trainingId, password });
+      req.session.user = { id: user.id, name: user.name, role: user.role };
       res.status(201).json({ id: user.id, name: user.name, company: user.company });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Error al registrar';

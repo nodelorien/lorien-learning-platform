@@ -15,6 +15,7 @@ import {
   School as SchoolIcon,
   Assignment as ExerciseIcon,
   BarChart as StatsIcon,
+  People as UsersIcon,
 } from '@mui/icons-material';
 import { useI18n } from '@/contexts/I18nContext';
 import { t } from '@/lib/i18n';
@@ -31,6 +32,12 @@ const adminCards = [
     icon: <ExerciseIcon sx={{ fontSize: 48 }} />,
     path: '/admin/exercises',
     color: '#e94560',
+  },
+  {
+    title: 'admin.users',
+    icon: <UsersIcon sx={{ fontSize: 48 }} />,
+    path: '/admin/users',
+    color: '#2e7d32',
   },
 ];
 
