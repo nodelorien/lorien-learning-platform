@@ -28,7 +28,7 @@
     "dev": "nodemon",
     "start": "node --max-old-space-size=128 dist/server.js",
     "start:prod": "NODE_ENV=production node --max-old-space-size=128 dist/server.js",
-    "start:frontend": "cd frontend && PORT=3001 NODE_OPTIONS=\"--max-old-space-size=256\" npx next start",
+    "start:frontend": "cd frontend && PORT=${PORT:-3001} NODE_OPTIONS=\"--max-old-space-size=256\" npx next start",
     "start:all": "npm run start:prod & npm run start:frontend",
     "build": "tsc",
     "build:frontend": "cd frontend && npx next build",
@@ -43,7 +43,6 @@
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "better-sqlite3": "^12.11.1",
-    "connect-sqlite3": "^0.9.16",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",

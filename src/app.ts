@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import session from 'express-session';
-import path from 'path';
 import { SqliteUserRepository } from './modules/auth/infrastructure/sqlite-user-repository';
 import { SqliteTrainingRepository } from './modules/trainings/infrastructure/sqlite-training-repository';
 import { SqliteExerciseRepository } from './modules/exercises/infrastructure/sqlite-exercise-repository';
@@ -13,9 +12,7 @@ import { env } from './config/env';
 import { createStatsController } from './modules/stats/controllers/stats-controller';
 import { createUserController } from './modules/users/controllers/user-controller';
 import { requireAuth, requireAdmin } from './modules/auth/application/auth-middleware';
-
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const SQLiteStore = require('connect-sqlite3')(session);
+import { createSqliteSessionStore } from './shared/infrastructure/session-store';
 
 const app = express();
 
@@ -23,7 +20,7 @@ app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(
   session({
-    store: new SQLiteStore({ db: 'sessions.db', dir: path.resolve(__dirname, '../../data') }),
+    store: createSqliteSessionStore(),
     secret: env.sessionSecret,
     resave: false,
     saveUninitialized: false,

@@ -1,10 +1,11 @@
 import type { NextConfig } from "next";
+import path from "path";
 
 const API_URL = process.env.API_URL || 'http://localhost:4000';
 
 const nextConfig: NextConfig = {
   images: { unoptimized: true },
-  outputFileTracingRoot: process.env.OUTPUT_FILE_TRACING_ROOT || undefined,
+  outputFileTracingRoot: path.resolve('..'),
 
   async rewrites() {
     return [
