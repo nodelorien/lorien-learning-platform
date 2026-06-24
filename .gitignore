@@ -3,4 +3,8 @@ dist/
 *.db
 *.sqlite
 .env
+.env.production
 coverage/
+frontend/out/
+frontend/.next/
+

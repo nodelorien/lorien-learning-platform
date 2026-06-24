@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import {
   Container,
   Typography,
@@ -85,13 +85,6 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => { refresh(); }, [refresh]);
-
-  const pollRef = useRef<ReturnType<typeof setInterval>>();
-  useEffect(() => {
-    pollRef.current = setInterval(refresh, 30000);
-    return () => clearInterval(pollRef.current);
-  }, [refresh]);
-
   usePusherEvent('ranking', 'ranking-updated', refresh);
 
   if (isMobile) {

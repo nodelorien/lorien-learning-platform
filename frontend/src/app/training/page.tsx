@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/RouteGuard';
 import {
@@ -39,21 +39,14 @@ function TrainingPageContent() {
   const [trainings, setTrainings] = useState<Training[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const load = useCallback(() => {
+  const load = () => {
     api.get('/trainings').then(({ data }) => {
       setTrainings(data.filter((t: Training) => t.enabled));
       setLoading(false);
     }).catch(() => setLoading(false));
-  }, []);
+  };
 
-  useEffect(() => { load(); }, [load]);
-
-  const pollRef = useRef<ReturnType<typeof setInterval>>();
-  useEffect(() => {
-    pollRef.current = setInterval(load, 30000);
-    return () => clearInterval(pollRef.current);
-  }, [load]);
-
+  useEffect(() => { load(); }, []);
   usePusherEvent('trainings', 'training-updated', load);
 
   if (loading) {

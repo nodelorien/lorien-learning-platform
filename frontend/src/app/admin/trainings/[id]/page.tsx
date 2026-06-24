@@ -249,3 +249,7 @@ function EditTrainingContent() {
 export default function EditTrainingPage() {
   return <AdminRoute><EditTrainingContent /></AdminRoute>;
 }
+
+export function generateStaticParams() {
+  return [];
+}

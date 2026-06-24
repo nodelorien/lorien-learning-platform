@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/RouteGuard';
 import {
@@ -98,12 +98,6 @@ function TrainingDetailContent() {
   }, [params.id, user]);
 
   useEffect(() => { loadExercises(); }, [loadExercises]);
-
-  const pollRef = useRef<ReturnType<typeof setInterval>>();
-  useEffect(() => {
-    pollRef.current = setInterval(loadExercises, 30000);
-    return () => clearInterval(pollRef.current);
-  }, [loadExercises]);
 
   const trainingId = Array.isArray(params.id) ? params.id[0] : params.id;
   usePusherEvent('trainings', 'training-updated', useCallback(() => {
@@ -236,4 +230,8 @@ function TrainingDetailContent() {
 
 export default function TrainingDetailPage() {
   return <ProtectedRoute><TrainingDetailContent /></ProtectedRoute>;
+}
+
+export function generateStaticParams() {
+  return [];
 }

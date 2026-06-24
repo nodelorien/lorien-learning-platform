@@ -1,4 +1,5 @@
 import express from 'express';
+import path from 'path';
 import cors from 'cors';
 import session from 'express-session';
 import { SqliteUserRepository } from './modules/auth/infrastructure/sqlite-user-repository';
@@ -49,5 +50,16 @@ app.get('/api/config/public', (_req, res) => {
     pusherCluster: env.pusher.cluster,
   });
 });
+
+// Serve static frontend build in production (single process, no CORS)
+if (env.nodeEnv === 'production') {
+  const frontendPath = path.resolve(__dirname, '../../frontend/out');
+  app.use(express.static(frontendPath));
+
+  // SPA fallback — serve index.html for all non-API routes
+  app.get('*', (_req, res) => {
+    res.sendFile(path.join(frontendPath, 'index.html'));
+  });
+}
 
 export { app };
