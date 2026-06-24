@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Container,
   Typography,
@@ -18,13 +19,24 @@ import {
   useTheme,
   Card,
   CardContent,
+  Button,
+  Grid,
+  CircularProgress,
 } from '@mui/material';
 import {
   EmojiEvents as TrophyIcon,
   AccessTime as TimeIcon,
   CheckCircle as CheckIcon,
+  School as SchoolIcon,
+  Edit as PromptIcon,
+  Timer as TriviaIcon,
+  Token as TokenIcon,
+  ArrowForward as ArrowIcon,
+  Login as LoginIcon,
+  PersonAdd as RegisterIcon,
 } from '@mui/icons-material';
 import api from '@/lib/api';
+import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/contexts/I18nContext';
 import { usePusherEvent } from '@/contexts/PusherContext';
 import { t } from '@/lib/i18n';
@@ -74,7 +86,7 @@ function RankingCard({ entry, index }: { entry: RankingEntry; index: number }) {
   );
 }
 
-export default function HomePage() {
+function RankingView() {
   const { lang } = useI18n();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -172,4 +184,168 @@ export default function HomePage() {
       </TableContainer>
     </Container>
   );
+}
+
+function LandingPage() {
+  const { lang } = useI18n();
+  const router = useRouter();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const sectionSx = { py: { xs: 6, md: 10 } };
+
+  return (
+    <>
+      {/* Hero */}
+      <Box sx={{ bgcolor: '#1a1a2e', color: 'white', ...sectionSx, textAlign: 'center' }}>
+        <Container maxWidth="md">
+          <SchoolIcon sx={{ fontSize: 56, color: '#e94560', mb: 2 }} />
+          <Typography variant="h3" sx={{ fontWeight: 800, mb: 2, fontSize: { xs: '1.75rem', md: '2.75rem' } }}>
+            {t('landing.hero.title', lang)}
+          </Typography>
+          <Typography variant="h6" sx={{ color: '#b0b0b0', mb: 4, maxWidth: 600, mx: 'auto', fontWeight: 400 }}>
+            {t('landing.hero.subtitle', lang)}
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Button
+              variant="contained"
+              size="large"
+              startIcon={<LoginIcon />}
+              onClick={() => router.push('/login')}
+              sx={{ bgcolor: '#e94560', '&:hover': { bgcolor: '#d63851' }, px: 4 }}
+            >
+              {t('nav.login', lang)}
+            </Button>
+            <Button
+              variant="outlined"
+              size="large"
+              startIcon={<RegisterIcon />}
+              onClick={() => router.push('/register')}
+              sx={{ borderColor: '#e94560', color: '#e94560', '&:hover': { borderColor: '#d63851', bgcolor: 'rgba(233,69,96,0.08)' }, px: 4 }}
+            >
+              {t('nav.register', lang)}
+            </Button>
+          </Box>
+        </Container>
+      </Box>
+
+      {/* How it works */}
+      <Box sx={{ bgcolor: 'white', ...sectionSx }}>
+        <Container maxWidth="md">
+          <Typography variant="h4" sx={{ textAlign: 'center', mb: 6, fontWeight: 700 }}>
+            {t('landing.how.title', lang)}
+          </Typography>
+          <Grid container spacing={4}>
+            {[
+              { num: '1', text: t('landing.how.step1', lang), icon: <SchoolIcon /> },
+              { num: '2', text: t('landing.how.step2', lang), icon: <PromptIcon /> },
+              { num: '3', text: t('landing.how.step3', lang), icon: <TrophyIcon /> },
+            ].map((step) => (
+              <Grid size={{ xs: 12, md: 4 }} key={step.num}>
+                <Card sx={{ textAlign: 'center', height: '100%', borderRadius: 3 }}>
+                  <CardContent sx={{ py: 4 }}>
+                    <Avatar sx={{ bgcolor: '#e94560', width: 56, height: 56, mx: 'auto', mb: 2 }}>
+                      {step.icon}
+                    </Avatar>
+                    <Typography variant="h5" sx={{ fontWeight: 700, color: '#e94560', mb: 1 }}>
+                      {step.num}
+                    </Typography>
+                    <Typography variant="body1" color="text.secondary">
+                      {step.text}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </Container>
+      </Box>
+
+      {/* Exercise types */}
+      <Box sx={{ bgcolor: '#f8f9fa', ...sectionSx }}>
+        <Container maxWidth="md">
+          <Typography variant="h4" sx={{ textAlign: 'center', mb: 6, fontWeight: 700 }}>
+            {t('landing.exercises.title', lang)}
+          </Typography>
+          <Grid container spacing={4}>
+            {[
+              { title: t('landing.exercises.trivia.title', lang), desc: t('landing.exercises.trivia.desc', lang), icon: <TriviaIcon sx={{ fontSize: 32 }} /> },
+              { title: t('landing.exercises.prompt.title', lang), desc: t('landing.exercises.prompt.desc', lang), icon: <PromptIcon sx={{ fontSize: 32 }} /> },
+              { title: t('landing.exercises.tokens.title', lang), desc: t('landing.exercises.tokens.desc', lang), icon: <TokenIcon sx={{ fontSize: 32 }} /> },
+            ].map((ex) => (
+              <Grid size={{ xs: 12, md: 4 }} key={ex.title}>
+                <Card sx={{ height: '100%', borderRadius: 3, transition: 'transform 0.2s', '&:hover': { transform: 'translateY(-4px)' } }}>
+                  <CardContent sx={{ p: 3 }}>
+                    <Box sx={{ color: '#e94560', mb: 2 }}>{ex.icon}</Box>
+                    <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>{ex.title}</Typography>
+                    <Typography variant="body2" color="text.secondary">{ex.desc}</Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </Container>
+      </Box>
+
+      {/* Training structure */}
+      <Box sx={{ bgcolor: 'white', ...sectionSx }}>
+        <Container maxWidth="sm" sx={{ textAlign: 'center' }}>
+          <SchoolIcon sx={{ fontSize: 48, color: '#e94560', mb: 2 }} />
+          <Typography variant="h4" sx={{ fontWeight: 700, mb: 3 }}>
+            {t('landing.trainings.title', lang)}
+          </Typography>
+          <Typography variant="body1" color="text.secondary" sx={{ mb: 4, lineHeight: 1.8 }}>
+            {t('landing.trainings.desc', lang)}
+          </Typography>
+          <Button
+            variant="contained"
+            size="large"
+            endIcon={<ArrowIcon />}
+            onClick={() => router.push('/register')}
+            sx={{ bgcolor: '#1a1a2e', '&:hover': { bgcolor: '#2d2d4e' } }}
+          >
+            {t('landing.hero.cta', lang)}
+          </Button>
+        </Container>
+      </Box>
+
+      {/* Story / About */}
+      <Box sx={{ bgcolor: '#1a1a2e', color: 'white', ...sectionSx }}>
+        <Container maxWidth="sm" sx={{ textAlign: 'center' }}>
+          <Typography variant="h4" sx={{ fontWeight: 700, mb: 3 }}>
+            {t('landing.story.title', lang)}
+          </Typography>
+          <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8, color: '#b0b0b0' }}>
+            {t('landing.story.desc', lang)}
+          </Typography>
+          <Typography variant="body2" sx={{ color: '#888' }}>
+            {t('landing.story.built', lang)} <strong>{t('landing.story.date', lang)}</strong>
+          </Typography>
+        </Container>
+      </Box>
+
+      {/* Footer */}
+      <Box sx={{ bgcolor: '#0f0f1a', color: '#666', py: 3, textAlign: 'center' }}>
+        <Typography variant="body2">{t('landing.footer', lang)}</Typography>
+      </Box>
+    </>
+  );
+}
+
+export default function HomePage() {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <Container sx={{ textAlign: 'center', py: 8 }}>
+        <CircularProgress />
+      </Container>
+    );
+  }
+
+  if (!user) {
+    return <LandingPage />;
+  }
+
+  return <RankingView />;
 }
