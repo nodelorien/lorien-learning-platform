@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/RouteGuard';
 import {
@@ -72,6 +72,7 @@ function TrainingDetailContent() {
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(true);
   const [result, setResult] = useState<'correct' | 'incorrect' | null>(null);
+  const startTimeRef = useRef(Date.now());
 
   const loadExercises = useCallback(() => {
     const id = Array.isArray(params.id) ? params.id[0] : params.id;
@@ -82,7 +83,9 @@ function TrainingDetailContent() {
       user.role !== 'admin' ? api.get(`/stats/training/${id}/user/${user.id}`) : Promise.resolve({ data: [] }),
     ]).then(([{ data: trainingData }, statsData]) => {
       const items: TrainingExercise[] = (trainingData.exercises || []).filter((e: TrainingExercise) => e.enabled);
-      const done = new Set<string>((statsData.data || []).map((s: { exerciseId: string }) => s.exerciseId));
+      const done = new Set<string>((statsData.data || [])
+        .filter((s: { status: string }) => s.status === 'completed')
+        .map((s: { exerciseId: string }) => s.exerciseId));
       setCompletedIds(done);
       Promise.all(
         items.map(async (te: TrainingExercise) => {
@@ -99,6 +102,10 @@ function TrainingDetailContent() {
 
   useEffect(() => { loadExercises(); }, [loadExercises]);
 
+  useEffect(() => {
+    startTimeRef.current = Date.now();
+  }, [currentStep]);
+
   const trainingId = Array.isArray(params.id) ? params.id[0] : params.id;
   usePusherEvent('trainings', 'training-updated', useCallback(() => {
     if (trainingId) loadExercises();
@@ -112,13 +119,15 @@ function TrainingDetailContent() {
 
     setResult(correct ? 'correct' : 'incorrect');
 
+    const timeSpent = Math.round((Date.now() - startTimeRef.current) / 1000);
+
     try {
       await api.post('/stats/attempts', {
         userId: user.id,
         exerciseId: currentExercise.id,
         trainingId,
         status: correct ? 'completed' : 'failed',
-        timeSpent: 0,
+        timeSpent,
         score: score ?? (correct ? 100 : 0),
       });
     } catch {

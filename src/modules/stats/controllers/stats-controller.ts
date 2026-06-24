@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import { RecordAttempt } from '../application/record-attempt';
 import { GetRanking } from '../application/get-ranking';
 import { StatsRepository } from '../domain/stats-repository';
-import { getPusher, CHANNELS, EVENTS } from '../../../shared/infrastructure/pusher';
+import { triggerEvent, CHANNELS, EVENTS } from '../../../shared/infrastructure/pusher';
 
 function p(params: Record<string, string | string[]>, key: string): string {
   const v = params[key];
@@ -19,8 +19,8 @@ export function createStatsController(
   router.post('/attempts', async (req: Request, res: Response) => {
     try {
       const stats = await recordAttempt.execute(req.body);
-      getPusher().trigger(CHANNELS.RANKING, EVENTS.RANKING_UPDATED, { timestamp: Date.now() });
-      getPusher().trigger(CHANNELS.TRAININGS, EVENTS.TRAINING_UPDATED, { timestamp: Date.now() });
+      triggerEvent(CHANNELS.RANKING, EVENTS.RANKING_UPDATED, { timestamp: Date.now() });
+      triggerEvent(CHANNELS.TRAININGS, EVENTS.TRAINING_UPDATED, { timestamp: Date.now() });
       res.status(201).json(stats);
     } catch {
       res.status(500).json({ error: 'Error al registrar intento' });

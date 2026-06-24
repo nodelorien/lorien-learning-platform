@@ -16,6 +16,12 @@ export function getPusher(): Pusher {
   return client;
 }
 
+export function triggerEvent(channel: string, event: string, data: Record<string, unknown>): void {
+  getPusher().trigger(channel, event, data).catch((err) => {
+    console.warn(`[Pusher] trigger failed (${channel}/${event}):`, err);
+  });
+}
+
 export const CHANNELS = {
   RANKING: 'ranking',
   TRAININGS: 'trainings',

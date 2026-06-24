@@ -4,7 +4,7 @@ import { UpdateTraining } from '../application/update-training';
 import { TrainingRepository } from '../domain/training-repository';
 import { ExerciseRepository } from '../../exercises/domain/exercise-repository';
 import { requireAuth } from '../../auth/application/auth-middleware';
-import { getPusher, CHANNELS, EVENTS } from '../../../shared/infrastructure/pusher';
+import { triggerEvent, CHANNELS, EVENTS } from '../../../shared/infrastructure/pusher';
 
 function p(params: Record<string, string | string[]>, key: string): string {
   const v = params[key];
@@ -54,7 +54,7 @@ export function createTrainingController(
   router.post('/', requireAuth, requireAdmin, async (req: Request, res: Response) => {
     try {
       const training = await createTraining.execute(req.body);
-      getPusher().trigger(CHANNELS.TRAININGS, EVENTS.TRAINING_UPDATED, { timestamp: Date.now() });
+      triggerEvent(CHANNELS.TRAININGS, EVENTS.TRAINING_UPDATED, { timestamp: Date.now() });
       res.status(201).json(training);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Error al crear training';
@@ -65,7 +65,7 @@ export function createTrainingController(
   router.put('/:id', requireAuth, requireAdmin, async (req: Request, res: Response) => {
     try {
       const training = await updateTraining.execute({ id: p(req.params, 'id'), ...req.body });
-      getPusher().trigger(CHANNELS.TRAININGS, EVENTS.TRAINING_UPDATED, { timestamp: Date.now() });
+      triggerEvent(CHANNELS.TRAININGS, EVENTS.TRAINING_UPDATED, { timestamp: Date.now() });
       res.json(training);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Error al actualizar training';
@@ -76,7 +76,7 @@ export function createTrainingController(
   router.delete('/:id', requireAuth, requireAdmin, async (req: Request, res: Response) => {
     try {
       await trainingRepository.delete(p(req.params, 'id'));
-      getPusher().trigger(CHANNELS.TRAININGS, EVENTS.TRAINING_UPDATED, { timestamp: Date.now() });
+      triggerEvent(CHANNELS.TRAININGS, EVENTS.TRAINING_UPDATED, { timestamp: Date.now() });
       res.json({ success: true });
     } catch {
       res.status(500).json({ error: 'Error al eliminar training' });
@@ -94,7 +94,7 @@ export function createTrainingController(
       const existing = await trainingRepository.getExercises(p(req.params, 'id'));
       const nextPosition = position ?? existing.length;
       const te = await trainingRepository.addExercise(p(req.params, 'id'), exerciseId, nextPosition);
-      getPusher().trigger(CHANNELS.TRAININGS, EVENTS.TRAINING_UPDATED, { timestamp: Date.now() });
+      triggerEvent(CHANNELS.TRAININGS, EVENTS.TRAINING_UPDATED, { timestamp: Date.now() });
       res.status(201).json(te);
     } catch {
       res.status(500).json({ error: 'Error al agregar ejercicio' });
@@ -104,7 +104,7 @@ export function createTrainingController(
   router.delete('/:id/exercises/:exerciseId', requireAuth, requireAdmin, async (req: Request, res: Response) => {
     try {
       await trainingRepository.removeExercise(p(req.params, 'id'), p(req.params, 'exerciseId'));
-      getPusher().trigger(CHANNELS.TRAININGS, EVENTS.TRAINING_UPDATED, { timestamp: Date.now() });
+      triggerEvent(CHANNELS.TRAININGS, EVENTS.TRAINING_UPDATED, { timestamp: Date.now() });
       res.json({ success: true });
     } catch {
       res.status(500).json({ error: 'Error al remover ejercicio' });
@@ -115,7 +115,7 @@ export function createTrainingController(
     try {
       const { exerciseIds } = req.body;
       await trainingRepository.reorderExercises(p(req.params, 'id'), exerciseIds);
-      getPusher().trigger(CHANNELS.TRAININGS, EVENTS.TRAINING_UPDATED, { timestamp: Date.now() });
+      triggerEvent(CHANNELS.TRAININGS, EVENTS.TRAINING_UPDATED, { timestamp: Date.now() });
       res.json({ success: true });
     } catch {
       res.status(500).json({ error: 'Error al reordenar ejercicios' });

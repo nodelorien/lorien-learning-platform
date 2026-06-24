@@ -85,6 +85,12 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => { refresh(); }, [refresh]);
+
+  useEffect(() => {
+    const interval = setInterval(refresh, 15000);
+    return () => clearInterval(interval);
+  }, [refresh]);
+
   usePusherEvent('ranking', 'ranking-updated', refresh);
 
   if (isMobile) {
