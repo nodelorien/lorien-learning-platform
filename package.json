@@ -26,13 +26,13 @@
   },
   "scripts": {
     "dev": "nodemon",
+    "start": "node --max-old-space-size=256 dist/server.js",
+    "start:prod": "NODE_ENV=production node --max-old-space-size=256 dist/server.js",
     "build": "tsc",
-    "start": "node dist/server.js",
     "build:frontend": "cd frontend && npx next build",
     "build:all": "npm run build && npm run build:frontend",
-    "start:prod": "NODE_ENV=production node --max-old-space-size=512 dist/server.js",
-    "start:all": "npm run start:prod",
-    "prod": "npm run build:all && npm run start:prod",
+    "install:all": "npm install && cd frontend && npm install",
+    "deploy": "npm run install:all && npm run build:all && npm run start:prod",
     "test": "jest --passWithNoTests",
     "lint": "eslint src/ --ext .ts",
     "lint:fix": "eslint src/ --ext .ts --fix",
@@ -46,8 +46,6 @@
     "express": "^5.2.1",
     "express-session": "^1.19.0",
     "pusher": "^5.3.4",
-    "pusher-js": "^8.5.0",
-    "sqlite3": "^6.0.1",
     "uuid": "^14.0.1"
   },
   "devDependencies": {

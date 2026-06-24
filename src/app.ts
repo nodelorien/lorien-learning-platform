@@ -20,7 +20,7 @@ app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(
   session({
-    secret: 'lorien-secret-key-change-in-production',
+    secret: env.sessionSecret,
     resave: false,
     saveUninitialized: false,
     cookie: { secure: false, httpOnly: true, maxAge: 24 * 60 * 60 * 1000 },
