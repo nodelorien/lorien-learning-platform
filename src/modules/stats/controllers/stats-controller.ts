@@ -1,8 +1,9 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { RecordAttempt } from '../application/record-attempt';
 import { GetRanking } from '../application/get-ranking';
 import { StatsRepository } from '../domain/stats-repository';
 import { triggerEvent, CHANNELS, EVENTS } from '../../../shared/infrastructure/pusher';
+import { requireAuth } from '../../auth/application/auth-middleware';
 
 function p(params: Record<string, string | string[]>, key: string): string {
   const v = params[key];
@@ -16,7 +17,7 @@ export function createStatsController(
   const recordAttempt = new RecordAttempt(statsRepository);
   const getRanking = new GetRanking(statsRepository);
 
-  router.post('/attempts', async (req: Request, res: Response) => {
+  router.post('/attempts', requireAuth, async (req: Request, res: Response) => {
     try {
       const stats = await recordAttempt.execute(req.body);
       triggerEvent(CHANNELS.RANKING, EVENTS.RANKING_UPDATED, { timestamp: Date.now() });
@@ -50,7 +51,7 @@ export function createStatsController(
     }
   });
 
-  router.get('/training/:trainingId/user/:userId', async (req: Request, res: Response) => {
+  router.get('/training/:trainingId/user/:userId', requireAuth, async (req: Request, res: Response) => {
     try {
       const stats = await statsRepository.findByUserAndTraining(
         p(req.params, 'userId'),

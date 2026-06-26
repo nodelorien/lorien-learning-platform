@@ -74,6 +74,8 @@ export function runMigrations(): void {
   // Migration: recreate exercises table without type CHECK constraint to support 'tokens' type
   const oldTable = db.prepare("SELECT sql FROM sqlite_master WHERE name='exercises'").get() as { sql: string } | undefined;
   if (oldTable && oldTable.sql.includes("CHECK(type IN ('prompt', 'trivia'))")) {
+    const oldCols = db.prepare("PRAGMA table_info('exercises')").all() as { name: string }[];
+    const oldColNames = oldCols.map((c) => c.name).join(', ');
     db.exec(`
       CREATE TABLE exercises_new (
         id TEXT PRIMARY KEY,
@@ -88,7 +90,7 @@ export function runMigrations(): void {
         created_at TEXT NOT NULL DEFAULT (datetime('now')),
         updated_at TEXT NOT NULL DEFAULT (datetime('now'))
       );
-      INSERT INTO exercises_new SELECT * FROM exercises;
+      INSERT INTO exercises_new (${oldColNames}) SELECT ${oldColNames} FROM exercises;
       DROP TABLE exercises;
       ALTER TABLE exercises_new RENAME TO exercises;
     `);

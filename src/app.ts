@@ -16,6 +16,7 @@ import { createSqliteSessionStore } from './shared/infrastructure/session-store'
 
 const app = express();
 
+app.set('trust proxy', 1);
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(
@@ -39,7 +40,7 @@ const trainingController = createTrainingController(trainingRepository, exercise
 app.use('/api/trainings', trainingController);
 app.use('/api/users', requireAuth, requireAdmin, createUserController(userRepository));
 app.use('/api/exercises', requireAuth, createExerciseController(exerciseRepository));
-app.use('/api/stats', requireAuth, createStatsController(statsRepository));
+app.use('/api/stats', createStatsController(statsRepository));
 
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok' });
